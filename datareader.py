@@ -8,7 +8,8 @@ from entities.tweet import Tweet
 def ms_str(tw):
     return datetime.datetime.fromtimestamp(tw/1e3).strftime('%Y-%m-%d %H:%M:%S')
 
-rows_to_read = 100
+
+cluster_filter_threshold = 300
 
 clusters = {}
 intermediate_cluster_count = {}
@@ -20,10 +21,6 @@ with open("data/1day/clusters.sortedby.clusterid.csv", 'r', encoding='utf-8') as
     reader = csv.reader(reddit_posts_csv, delimiter=',',
                         quotechar='"', quoting=csv.QUOTE_MINIMAL)
     for row in reader:
-        # if rows_to_read < 0:
-        #     break
-        # rows_to_read = rows_to_read - 1
-        ################################
         cluster_id = int(row[0])
         cluster_entity = row[1]
 
@@ -45,11 +42,11 @@ with open("data/1day/clusters.sortedby.clusterid.csv", 'r', encoding='utf-8') as
 
 tweet_numbers = np.array(intermediate_tweet_numbers)
 
-cluster_time_centroids = []
+relevant_cluster_centroids = []
 
 for c in clusters:
-    if intermediate_cluster_count[c] > 100:
+    if intermediate_cluster_count[c] > cluster_filter_threshold:
         filtered_clusters.add(c)
-        cc = int(np.mean(tweet_numbers[tweet_numbers[:,0] == c][:,1]))
+        timestamp_centroid = int(np.mean(tweet_numbers[tweet_numbers[:, 0] == c][:, 1]))
 
-        print(c, ms_str(cc))
+        print(clusters[c], ms_str(timestamp_centroid))
