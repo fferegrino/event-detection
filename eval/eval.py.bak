@@ -19,9 +19,9 @@ def main():
     """Attempts to load relevance information and parse evaluation file"""
 
     if len(sys.argv) < 2:
-        print("You need to specify the path to the clusters file you want to evaluate.")
-        print("The file should have the same format as clusters.sortedby.clusterid.csv, however row order does not matter.")
-        print("example: python eval.py ../1day/clusters.sortedby.clusterid.csv")
+        print "You need to specify the path to the clusters file you want to evaluate."
+        print "The file should have the same format as clusters.sortedby.clusterid.csv, however row order does not matter."
+        print "example: python eval.py ../1day/clusters.sortedby.clusterid.csv"
         return
 
     eval_file = sys.argv[1]
@@ -65,10 +65,10 @@ def main():
         line += 1
         parts = row.strip().split(",")
         if len(parts) < 2:
-            print("Line", line, "malformed.")
-            print("Expected:\t[cluster_id],[named_entity],[tweet_id]") 
-            print("Or:\t\t[cluster_id],[tweet_id]") 
-            print("\nGot:\t\t", row)
+            print "Line", line, "malformed."
+            print "Expected:\t[cluster_id],[named_entity],[tweet_id]" 
+            print "Or:\t\t[cluster_id],[tweet_id]" 
+            print "\nGot:\t\t", row
             return
 
         candidate = str(parts[0].strip())
@@ -92,7 +92,7 @@ def main():
 
     rel_found_event = {}
 
-    print("CLUSTER_ID\tTWEET COVERAGE\tEVENT DESCRIPTION FROM CROWDSOURCED EVALUATION")
+    print "CLUSTER_ID\tTWEET COVERAGE\tEVENT DESCRIPTION FROM CROWDSOURCED EVALUATION"
     for candidate in sorted(candidates):
         valid_count += 1
         # print candidate, ",",
@@ -146,7 +146,7 @@ def main():
                     category_counts[category[e]] += 1
                     total_items_count += 1
 
-                    print(candidate, "\t\t", str(relevant[e]) + "/" + str(len(set(tweets_per_event[e]))) + " (" + str(int(100.0 / len(candidates[candidate]) * relevant[e])) + "%)\t", descriptions[e][:120])
+                    print candidate, "\t\t", str(relevant[e]) + "/" + str(len(set(tweets_per_event[e]))) + " (" + str(int(100.0 / len(candidates[candidate]) * relevant[e])) + "%)\t", descriptions[e][:120]
                 # else:
                     # print "\t\t", str(relevant[e]) + "/" + str(len(set(tweets_per_event[e]))) + "(" + str(int(100.0 / len(candidates[candidate]) * relevant[e])) + "%)\t", descriptions[e][:120]
 
@@ -161,29 +161,29 @@ def main():
         event_precision = float(len(set(above_threshold))) / valid_count
         f_measure = 2 * ((event_precision * event_recall) / (event_precision + event_recall))
 
-        print()
-        print("-------   EVENTS   -------\t")
-        print()
-        print("EVENTS / CLUSTER STATISTICS:")
-        print(" - Of", len(descriptions), "events,", len(set(found_above_threshold)), "were detected.")
-        print(" - Of", valid_count, "clusters,", len(set(above_threshold)), "could be matched back to an event.")
-        print("")
-        print("Event Recall:\t\t%1.3f" % (event_recall))
-        print("Cluster Precision:\t%1.3f" % (event_precision))
-        print("Overall F-Measure:\t%1.3f" % (f_measure))
+        print
+        print "-------   EVENTS   -------\t"
+        print
+        print "EVENTS / CLUSTER STATISTICS:"
+        print " - Of", len(descriptions), "events,", len(set(found_above_threshold)), "were detected."
+        print " - Of", valid_count, "clusters,", len(set(above_threshold)), "could be matched back to an event."
+        print ""
+        print "Event Recall:\t\t%1.3f" % (event_recall)
+        print "Cluster Precision:\t%1.3f" % (event_precision)
+        print "Overall F-Measure:\t%1.3f" % (f_measure)
 
-        print()
-        print()
-        print("----- CATEGORIES  -----")
-        print()
-        print("%-30s    RECALL" % ("CATEGORY NAME"))
+        print
+        print
+        print "----- CATEGORIES  -----"
+        print
+        print "%-30s    RECALL" % ("CATEGORY NAME")
         for cat in ret_cat_count:
-            print("%-30s  %3d/%d\t(%1.3f)" % (cat, ret_cat_count[cat], cat_count[cat], ret_cat_count[cat] / float(cat_count[cat])))
-        print("")
+            print "%-30s  %3d/%d\t(%1.3f)" % (cat, ret_cat_count[cat], cat_count[cat], ret_cat_count[cat] / float(cat_count[cat]))
+        print ""
 
-        print()
+        print
     else:
-        print("Didn't find any event clusters that could be matched to an event.")
+        print "Didn't find any event clusters that could be matched to an event."
 
 
 if __name__ == "__main__":
