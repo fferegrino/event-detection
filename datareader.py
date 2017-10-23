@@ -40,7 +40,7 @@ with open("data/1day/clusters.sortedby.clusterid.csv", 'r', encoding='utf-8') as
 
 tweet_numbers = np.array(intermediate_tweet_numbers)
 
-# filter out small clusters
+# filter out small clusters & centroid calculation
 filtered_clusters = set()
 relevant_cluster_centroids = []
 cluster_entities = {}
@@ -57,7 +57,7 @@ centroids_sortedby_time = relevant_cluster_centroids[relevant_cluster_centroids[
 
 # find similar clusters:
 candidate_similar_clusters = {}
-window_timedelta = datetime.timedelta(hours=1)
+window_timedelta = datetime.timedelta(hours=2)
 window_timespan = window_timedelta.total_seconds() * 1000
 
 # o(n^2) algorithm, needs improvement
@@ -77,9 +77,15 @@ for centroid in centroids_sortedby_time:
         if len(overlap) > 0:
             candidate_similar_clusters[cluster_id].append(other_cluster_id)
 
+cluster_remap = []
+
 for cluster_id in candidate_similar_clusters:
+    cluster_remap.append(cluster_id)
     if len(candidate_similar_clusters[cluster_id]) == 0:
         continue
     print(clusters[cluster_id] + ":")
     for candidate in candidate_similar_clusters[cluster_id]:
         print("\t",clusters[candidate])
+
+for i,original_cluster in enumerate(cluster_remap):
+    print(i, original_cluster)
