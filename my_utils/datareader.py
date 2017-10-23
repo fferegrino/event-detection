@@ -29,6 +29,7 @@ def read_clustered(file: str, return_tweets: bool = False):
                           int(row[4]),
                           row[6])
                 t.cluster_id = cluster_id
+                t.tweet_tokens = row[5]
                 tweets.append(t)
 
             intermediate_tweet_numbers.append([cluster_id, timestamp_ms])

@@ -1,18 +1,20 @@
 import csv
 import datetime
+from typing import List
+
 import numpy as np
 
 from entities.tweet import Tweet
 from my_utils.functions import ms_str
 from my_utils.datareader import read_clustered
 from my_utils.filters import threeshold_filter
+from my_utils.datawriter import print_clustered
 
 from structures.unionfind import UnionFind
 
 
-cluster_filter_threshold: int = 50
-
-clusters, cluster_counts, cluster_timestamps, tweets = read_clustered("data/1day/clusters.sortedby.clusterid.csv")
+cluster_filter_threshold: int = 100
+clusters, cluster_counts, cluster_timestamps, tweets = read_clustered("data/1day/clusters.sortedby.clusterid.csv", True)
 
 timestamps:np.array = np.array(cluster_timestamps)
 
@@ -44,7 +46,7 @@ for centroid in centroids_sortedby_time:
         if len(overlap) > 0: # if there is overlap,
             candidate_similar_clusters[cluster_id].append(other_cluster_id)
 
-cluster_map: list = []
+cluster_map: List = []
 
 for cluster_id in candidate_similar_clusters:
     cluster_map.append(cluster_id)
@@ -61,5 +63,20 @@ for i,original_cluster in enumerate(cluster_map):
         uf.union(i, cluster_map.index(candidate))
         superclusters[i] = superclusters[i] | f_cluster_entities[candidate]
 
-for aa in superclusters:
-    print(clusters[cluster_map[aa]], superclusters[aa])
+# for index, actual in enumerate(uf._id):
+#     print(clusters[cluster_map[index]], superclusters[actual], index, "->", actual)
+
+# now, filter tweets
+new_selected_tweets: List[Tweet] = []
+for t in tweets:
+    real_cluster_id = t.cluster_id
+    if real_cluster_id in f_clusters:
+        mapped_cluster_id = cluster_map.index(real_cluster_id)
+        t.cluster_id = real_cluster_id  # set new cluster
+        t.cluster_name_entity = " ".join(superclusters[mapped_cluster_id])
+        new_selected_tweets.append(t)
+print("Original amount of tweets:", len(tweets), "\n",
+      "New amount of tweets\t\t", len(new_selected_tweets))
+
+print_clustered("my_results.csv", new_selected_tweets)
+
