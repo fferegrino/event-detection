@@ -1,4 +1,4 @@
-import csv
+import argparse
 import datetime
 from typing import List
 
@@ -12,71 +12,93 @@ from my_utils.datawriter import print_clustered
 
 from structures.unionfind import UnionFind
 
+parser = argparse.ArgumentParser(description='Do some cluster magic!')
+parser.add_argument('threshold', metavar='sub', type=int,
+                    help='the minimum amount of tweets per cluster')
+parser.add_argument("data_file", action="store",
+                    help="the file containing the clusters")
+parser.add_argument("-o", "--output_file", action="store",
+                    help="the file where I should save the results")
+parser.add_argument("-v", "--verbose", help="should i tell you everything im doing?",
+                    action="store", default=True)
 
-cluster_filter_threshold: int = 100
-clusters, cluster_counts, cluster_timestamps, tweets = read_clustered("data/1day/clusters.sortedby.clusterid.csv", True)
+def main(args=None):
+    """The main routine."""
 
-timestamps:np.array = np.array(cluster_timestamps)
+    args = parser.parse_args()
+    cluster_filter_threshold = args.threshold
+    data_file = args.data_file
 
-f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_filter(clusters, cluster_counts, timestamps, cluster_filter_threshold);
 
-f_cluster_centroids = np.array(f_cluster_centroids)
-centroids_sortedby_time = f_cluster_centroids[f_cluster_centroids[:, 1].argsort()]
+    output_file = args.output_file
+    if output_file == None:
+        output_file = "results-" + str(cluster_filter_threshold) + ".csv"
 
-# find similar clusters:
-candidate_similar_clusters: dict = {}
-window_timedelta = datetime.timedelta(hours=2)
-window_timespan = window_timedelta.total_seconds() * 1000
+    clusters, cluster_counts, cluster_timestamps, tweets = read_clustered(data_file, True)
 
-# o(n^2) algorithm, needs improvement
-for centroid in centroids_sortedby_time:
-    cluster_id = centroid[0]
-    window_start = centroid[1] - window_timespan
-    window_end = centroid[1]
-    for centroid_ in centroids_sortedby_time: # search again from the begining
-        other_cluster_id = centroid_[0]
+    timestamps:np.array = np.array(cluster_timestamps)
 
-        if cluster_id not in candidate_similar_clusters:
-            candidate_similar_clusters[cluster_id] = []
+    f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_filter(clusters, cluster_counts, timestamps, cluster_filter_threshold);
 
-        if window_start >= centroid_[1] or centroid_[1] > window_end or cluster_id == other_cluster_id:
-            continue # skip if its outside our time window
+    f_cluster_centroids = np.array(f_cluster_centroids)
+    centroids_sortedby_time = f_cluster_centroids[f_cluster_centroids[:, 1].argsort()]
 
-        overlap = f_cluster_entities[cluster_id].intersection(f_cluster_entities[other_cluster_id])
-        if len(overlap) > 0: # if there is overlap,
-            candidate_similar_clusters[cluster_id].append(other_cluster_id)
+    # find similar clusters:
+    candidate_similar_clusters: dict = {}
+    window_timedelta = datetime.timedelta(hours=2)
+    window_timespan = window_timedelta.total_seconds() * 1000
 
-cluster_map: List = []
+    # o(n^2) algorithm, needs improvement
+    for centroid in centroids_sortedby_time:
+        cluster_id = centroid[0]
+        window_start = centroid[1] - window_timespan
+        window_end = centroid[1]
+        for centroid_ in centroids_sortedby_time: # search again from the begining
+            other_cluster_id = centroid_[0]
 
-for cluster_id in candidate_similar_clusters:
-    cluster_map.append(cluster_id)
+            if cluster_id not in candidate_similar_clusters:
+                candidate_similar_clusters[cluster_id] = []
 
-uf = UnionFind(len(cluster_map))
+            if window_start >= centroid_[1] or centroid_[1] > window_end or cluster_id == other_cluster_id:
+                continue # skip if its outside our time window
 
-superclusters: dict = { }
+            overlap = f_cluster_entities[cluster_id].intersection(f_cluster_entities[other_cluster_id])
+            if len(overlap) > 0: # if there is overlap,
+                candidate_similar_clusters[cluster_id].append(other_cluster_id)
 
-for i,original_cluster in enumerate(cluster_map):
-    superclusters[i] = f_cluster_entities[original_cluster]
-    for candidate in candidate_similar_clusters[original_cluster]:
-        if uf.find(i, cluster_map.index(candidate)):
-            continue
-        uf.union(i, cluster_map.index(candidate))
-        superclusters[i] = superclusters[i] | f_cluster_entities[candidate]
+    cluster_map: List = []
 
-# for index, actual in enumerate(uf._id):
-#     print(clusters[cluster_map[index]], superclusters[actual], index, "->", actual)
+    for cluster_id in candidate_similar_clusters:
+        cluster_map.append(cluster_id)
 
-# now, filter tweets
-new_selected_tweets: List[Tweet] = []
-for t in tweets:
-    real_cluster_id = t.cluster_id
-    if real_cluster_id in f_clusters:
-        mapped_cluster_id = cluster_map.index(real_cluster_id)
-        t.cluster_id = real_cluster_id  # set new cluster
-        t.cluster_name_entity = " ".join(superclusters[mapped_cluster_id])
-        new_selected_tweets.append(t)
-print("Original amount of tweets:", len(tweets), "\n",
-      "New amount of tweets\t\t", len(new_selected_tweets))
+    uf = UnionFind(len(cluster_map))
 
-print_clustered("my_results.csv", new_selected_tweets)
+    superclusters: dict = { }
 
+    for i,original_cluster in enumerate(cluster_map):
+        superclusters[i] = f_cluster_entities[original_cluster]
+        for candidate in candidate_similar_clusters[original_cluster]:
+            if uf.find(i, cluster_map.index(candidate)):
+                continue
+            uf.union(i, cluster_map.index(candidate))
+            superclusters[i] = superclusters[i] | f_cluster_entities[candidate]
+
+    # now, filter tweets
+    new_selected_tweets: List[Tweet] = []
+    for t in tweets:
+        real_cluster_id = t.cluster_id
+        if real_cluster_id in f_clusters:
+            mapped_cluster_id = cluster_map.index(real_cluster_id)
+            t.cluster_id = real_cluster_id  # set new cluster
+            t.cluster_name_entity = " ".join(superclusters[mapped_cluster_id])
+            new_selected_tweets.append(t)
+
+    if args.verbose:
+        print("Original amount of tweets:\t", len(tweets))
+        print("New amount of tweets:\t\t", len(new_selected_tweets))
+
+    print_clustered(output_file, new_selected_tweets)
+
+
+if __name__ == "__main__":
+    main()
