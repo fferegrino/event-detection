@@ -123,5 +123,7 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/macos,windows,pycharm,jupyternotebook
 
+__pycache__/
+
 *1day
 *7days
