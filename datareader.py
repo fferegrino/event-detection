@@ -4,6 +4,8 @@ import numpy as np
 
 from entities.tweet import Tweet
 
+from structures.unionfind import UnionFind
+
 
 def ms_str(tw):
     return datetime.datetime.fromtimestamp(tw/1e3).strftime('%Y-%m-%d %H:%M:%S')
@@ -68,24 +70,28 @@ for centroid in centroids_sortedby_time:
     for centroid_ in centroids_sortedby_time: # search again from the begining
         other_cluster_id = centroid_[0]
         if window_start >= centroid_[1] or centroid_[1] > window_end or cluster_id == other_cluster_id:
-            continue # continue if its outside our time window
+            continue # skip if its outside our time window
 
         if cluster_id not in candidate_similar_clusters:
             candidate_similar_clusters[cluster_id] = []
 
         overlap = cluster_entities[cluster_id].intersection(cluster_entities[other_cluster_id])
-        if len(overlap) > 0:
+        if len(overlap) > 0: # if there is overlap, 
             candidate_similar_clusters[cluster_id].append(other_cluster_id)
 
 cluster_remap = []
 
 for cluster_id in candidate_similar_clusters:
     cluster_remap.append(cluster_id)
-    if len(candidate_similar_clusters[cluster_id]) == 0:
-        continue
-    print(clusters[cluster_id] + ":")
-    for candidate in candidate_similar_clusters[cluster_id]:
-        print("\t",clusters[candidate])
+
+uf = UnionFind(len(cluster_remap))
 
 for i,original_cluster in enumerate(cluster_remap):
-    print(i, original_cluster)
+    for candidate in candidate_similar_clusters[original_cluster]:
+        uf.union(i, cluster_remap.index(candidate))
+
+
+for i, c_id in enumerate(uf._id):
+    i_mapped = cluster_remap[i]
+    cid_mapped = cluster_remap[c_id]
+    print(clusters[i_mapped],"merged with", clusters[cid_mapped])
