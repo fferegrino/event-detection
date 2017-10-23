@@ -11,9 +11,9 @@ from structures.unionfind import UnionFind
 
 cluster_filter_threshold = 100
 
-clusters, intermediate_cluster_count, intermediate_tweet_numbers, tweets = read_clustered("data/7days/clusters.sortedby.clusterid.csv")
+clusters, cluster_counts, cluster_timestamps, tweets = read_clustered("data/7days/clusters.sortedby.clusterid.csv")
 
-tweet_numbers = np.array(intermediate_tweet_numbers)
+timestamps = np.array(cluster_timestamps)
 
 # filter out small clusters & centroid calculation
 filtered_clusters = set()
@@ -21,9 +21,9 @@ relevant_cluster_centroids = []
 cluster_entities = {}
 
 for c_id in clusters:
-    if intermediate_cluster_count[c_id] > cluster_filter_threshold:
+    if cluster_counts[c_id] > cluster_filter_threshold:
         filtered_clusters.add(c_id)
-        timestamp_centroid = int(np.mean(tweet_numbers[tweet_numbers[:, 0] == c_id][:, 1]))
+        timestamp_centroid = int(np.mean(timestamps[timestamps[:, 0] == c_id][:, 1]))
         cluster_entities[c_id] = set(clusters[c_id].split(' '))
         relevant_cluster_centroids.append([c_id, timestamp_centroid ])
 
