@@ -4,6 +4,12 @@ from entities.tweet import Tweet
 
 
 def read_clustered(file: str, return_tweets: bool = False):
+    """
+    Reads a csv file containing data from clustered tweets and return some useful arrays to work with them
+    :param file:
+    :param return_tweets:
+    :return:
+    """
     clusters = {}
     intermediate_cluster_count = {}
     intermediate_tweet_numbers = []
