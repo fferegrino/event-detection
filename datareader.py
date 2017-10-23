@@ -10,11 +10,11 @@ from my_utils.filters import threeshold_filter
 from structures.unionfind import UnionFind
 
 
-cluster_filter_threshold = 300
+cluster_filter_threshold: int = 50
 
-clusters, cluster_counts, cluster_timestamps, tweets = read_clustered("data/7days/clusters.sortedby.clusterid.csv")
+clusters, cluster_counts, cluster_timestamps, tweets = read_clustered("data/1day/clusters.sortedby.clusterid.csv")
 
-timestamps = np.array(cluster_timestamps)
+timestamps:np.array = np.array(cluster_timestamps)
 
 f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_filter(clusters, cluster_counts, timestamps, cluster_filter_threshold);
 
@@ -22,7 +22,7 @@ f_cluster_centroids = np.array(f_cluster_centroids)
 centroids_sortedby_time = f_cluster_centroids[f_cluster_centroids[:, 1].argsort()]
 
 # find similar clusters:
-candidate_similar_clusters = {}
+candidate_similar_clusters: dict = {}
 window_timedelta = datetime.timedelta(hours=2)
 window_timespan = window_timedelta.total_seconds() * 1000
 
@@ -44,23 +44,22 @@ for centroid in centroids_sortedby_time:
         if len(overlap) > 0: # if there is overlap,
             candidate_similar_clusters[cluster_id].append(other_cluster_id)
 
-cluster_remap = []
+cluster_map: list = []
 
 for cluster_id in candidate_similar_clusters:
-    cluster_remap.append(cluster_id)
+    cluster_map.append(cluster_id)
 
-uf = UnionFind(len(cluster_remap))
+uf = UnionFind(len(cluster_map))
 
-for i,original_cluster in enumerate(cluster_remap):
+superclusters: dict = { }
+
+for i,original_cluster in enumerate(cluster_map):
+    superclusters[i] = f_cluster_entities[original_cluster]
     for candidate in candidate_similar_clusters[original_cluster]:
-        if uf.find(i, cluster_remap.index(candidate)):
-            print("Already joined!")
+        if uf.find(i, cluster_map.index(candidate)):
             continue
-        uf.union(i, cluster_remap.index(candidate))
+        uf.union(i, cluster_map.index(candidate))
+        superclusters[i] = superclusters[i] | f_cluster_entities[candidate]
 
-
-for i, c_id in enumerate(uf._id):
-    i_mapped = cluster_remap[i]
-    cid_mapped = cluster_remap[c_id]
-    if i_mapped != cid_mapped:
-        print(clusters[i_mapped],"merged with", clusters[cid_mapped])
+for aa in superclusters:
+    print(clusters[cluster_map[aa]], superclusters[aa])
