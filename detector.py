@@ -1,13 +1,14 @@
 import argparse
 import datetime
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 
 from entities.tweet import Tweet
+from my_utils.functions import ms_str
 from my_utils.datareader import read_clustered
 from my_utils.datawriter import print_clustered
-from my_utils.filters import threeshold_filter
+from my_utils.filters import threeshold_filter, threeshold_horoscope_filter
 from structures.unionfind import UnionFind
 
 parser = argparse.ArgumentParser(description='Do some cluster magic!')
@@ -36,7 +37,24 @@ def main(args=None):
 
     timestamps: np.array = np.array(cluster_timestamps)
 
-    f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_filter(clusters, cluster_counts, timestamps,
+    # by_user_counts: Dict[int, int] = {}
+    #
+    # for row in range(len(timestamps)):
+    #     user_id = timestamps[row][2]
+    #     if user_id not in by_user_counts:
+    #         by_user_counts[user_id] = 0
+    #     by_user_counts[user_id] = by_user_counts[user_id] + 1
+    #
+    # for uid in by_user_counts:
+    #     if by_user_counts[uid] > 20:
+    #         print(uid)
+    #         for t in tweets:
+    #             if t.user_id == uid:
+    #                 print(ms_str(t.timestamp_ms), t.cluster_name_entity, t.tweet_text)
+    #
+    # return
+
+    f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_horoscope_filter(clusters, cluster_counts, timestamps,
                                                                             cluster_filter_threshold);
 
     f_cluster_centroids = np.array(f_cluster_centroids)
