@@ -17,4 +17,4 @@ def threeshold_filter(clusters: dict, cluster_counts: dict, timestamps: np.array
                 cluster_entities[c_id].remove('')
             relevant_cluster_centroids.append([c_id, timestamp_centroid])
 
-    return (filtered_clusters, relevant_cluster_centroids, cluster_entities)
+    return filtered_clusters, relevant_cluster_centroids, cluster_entities

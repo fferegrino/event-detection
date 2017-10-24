@@ -12,10 +12,9 @@ def print_clustered(filename: str, tweets: List[Tweet]):
             # TODO: Fix this ugly hack of the new lines
             tweet_text = tweet.tweet_text.replace('\n', ' ')
             submwriter.writerow((tweet.cluster_id,
-                                tweet.cluster_name_entity,
-                                tweet.tweet_id,
-                                tweet.timestamp_ms,
-                                tweet.user_id,
-                                tweet.tweet_tokens,
-                                tweet_text))
-
+                                 tweet.cluster_name_entity,
+                                 tweet.tweet_id,
+                                 tweet.timestamp_ms,
+                                 tweet.user_id,
+                                 tweet.tweet_tokens,
+                                 tweet_text))
