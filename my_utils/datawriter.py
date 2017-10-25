@@ -5,7 +5,7 @@ from entities.tweet import Tweet
 
 
 def print_clustered(filename: str, tweets: List[Tweet]):
-    with open(filename, 'w', encoding='utf-8') as reddit_posts_csv:
+    with open(filename, 'w',encoding='utf8',newline='') as reddit_posts_csv:
         submwriter = csv.writer(reddit_posts_csv, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for tweet in tweets:
