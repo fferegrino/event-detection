@@ -5,6 +5,7 @@ from typing import List, Dict
 import numpy as np
 
 from entities.tweet import Tweet
+from entities.burst import Burst
 from my_utils.functions import ms_str
 from my_utils.datareader import read_clustered
 from my_utils.datawriter import print_clustered
@@ -53,6 +54,51 @@ def main(args=None):
     #                 print(ms_str(t.timestamp_ms), t.cluster_name_entity, t.tweet_text)
     #
     # return
+
+    burst_time = 60000 * 1
+    burst_size = 15
+
+    possible_brusts:Dict[str, Burst] = {}
+
+    for t in tweets[:10000]:
+        topics = t.cluster_name_entity.split(' ')
+        for topic in topics:
+            if topic not in possible_brusts:
+                possible_brusts[topic] = Burst(topic)
+            current_burst: Burst = possible_brusts[topic]
+            current_burst.add_document(t)
+
+        current_timestamp = t.timestamp_ms
+        # Clean past brusts:
+        bursts_to_delete = []
+        bursts_to_save = []
+        for br in possible_brusts:
+            burst = possible_brusts[br]
+            if burst.max_date() < current_timestamp - burst_time and len(burst) < burst_size:
+                #print("To delete", burst.entity)
+                bursts_to_delete.append(br)
+            elif burst.max_date() < current_timestamp - burst_time and len(burst) >= burst_size:
+                #print("To save", burst.entity)
+                bursts_to_save.append(br)
+
+
+        for to_delete in bursts_to_delete:
+            del possible_brusts[to_delete]
+        for to_save in bursts_to_save:
+            del possible_brusts[to_save]
+
+    for p in possible_brusts:
+        burst = possible_brusts[p]
+        print(burst.entity, len(burst), ms_str(burst.min_date()), ms_str(burst.max_date()))
+
+    print("Bursts:", len(possible_brusts))
+
+    #for b in possible_brusts:
+    #    burst = possible_brusts[b]
+    #    print(burst.entity, burst.size(), ms_str( burst.min_document_date()) , ms_str( burst.max_document_date()))
+
+    return
+
 
     f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_horoscope_filter(clusters, cluster_counts, timestamps,
                                                                             cluster_filter_threshold);

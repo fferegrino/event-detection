@@ -3,6 +3,8 @@ run:
 	python detector.py 50 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-50.csv
 	python detector.py 50 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-50.csv
 	python detector.py 10 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-10.csv
+timed:
+	python detector.py 50 "data/1day/clusters.sortedby.time.csv" -o results/1day-50.csv
 evaluate:
 	python eval.py results/1day-50.csv > results/eval-1day-50.txt
 	python eval.py results/7days-50.csv > results/eval-7days-50.txt
