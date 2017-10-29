@@ -1,14 +1,21 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple, Set
 
 import numpy as np
 
 
 def threeshold_filter(clusters: Dict[int, str], cluster_counts: Dict[int, int], timestamps: np.array,
-                      cluster_filter_threshold: int):
-    # filter out small clusters & centroid calculation
-    filtered_clusters: set = set()
+                      cluster_filter_threshold: int) -> Tuple[Set[int], np.array, Dict[int, Set[str]]]:
+    """
+    Filters clusters that contain less than the specified number of tweets
+    :param clusters:
+    :param cluster_counts:
+    :param timestamps:
+    :param cluster_filter_threshold:
+    :return:
+    """
+    filtered_clusters: Set[int] = set()
     relevant_cluster_centroids: List[List[int]] = []
-    cluster_entities = {}
+    cluster_entities: Dict[int, Set[str]] = {}
 
     for c_id in clusters:
         if cluster_counts[c_id] > cluster_filter_threshold:

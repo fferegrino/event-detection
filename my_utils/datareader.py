@@ -1,4 +1,6 @@
 import csv
+from typing import Dict, List
+
 import numpy as np
 from entities.tweet import Tweet
 
@@ -6,13 +8,13 @@ from entities.tweet import Tweet
 def read_clustered(file: str, return_tweets: bool = False):
     """
     Reads a csv file containing data from clustered tweets and return some useful arrays to work with them
-    :param file:
-    :param return_tweets:
+    :param file: The input file
+    :param return_tweets: Should build and return tweets from te file
     :return:
     """
-    clusters = {}
-    intermediate_cluster_count = {}
-    intermediate_tweet_numbers = []
+    clusters: Dict[int, str] = {}
+    intermediate_cluster_count: Dict[int, int] = {}
+    intermediate_tweet_numbers: List[List[int]] = []
     tweets = []
 
     with open(file, 'r', encoding='utf-8') as reddit_posts_csv:

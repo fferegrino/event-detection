@@ -1,5 +1,5 @@
 import datetime
-from typing import Set, Dict, List
+from typing import Set, Dict, List,Tuple
 from structures.unionfind import UnionFind
 
 import numpy as np
@@ -7,7 +7,14 @@ import numpy as np
 
 def find_similar_clusters(cluster_entities: Dict[int, Set[str]],
                           cluster_centroids: np.array,
-                          time_delta: datetime.timedelta):
+                          time_delta: datetime.timedelta) -> Dict[int, List[int]]:
+    """
+    Naively finds similar clusters based on a certain timeframe
+    :param cluster_entities:
+    :param cluster_centroids:
+    :param time_delta:
+    :return:
+    """
     candidate_similar_clusters: Dict[int, List[int]] = {}
     centroids_sortedby_time = cluster_centroids[cluster_centroids[:, 1].argsort()]
 
@@ -35,8 +42,13 @@ def find_similar_clusters(cluster_entities: Dict[int, Set[str]],
 
 
 def join_superclusters(cluster_entities: Dict[int, Set[str]],
-                       candidate_similar_clusters: Dict[int, List[int]]):
-
+                       candidate_similar_clusters: Dict[int, List[int]]) -> Tuple[List[int], Dict[int, Set[str]]]:
+    """
+    Merges similar clusters based on a list provided
+    :param cluster_entities:
+    :param candidate_similar_clusters:
+    :return:
+    """
     cluster_map: List[int] = []
 
     for cluster_id in candidate_similar_clusters:

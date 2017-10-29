@@ -24,20 +24,17 @@ parser.add_argument("-v", "--verbose", help="should i tell you everything im doi
 
 
 def main(args=None):
-    """The main routine."""
-
     args = parser.parse_args()
     cluster_filter_threshold = args.threshold
     data_file = args.data_file
-
     output_file = args.output_file
     if output_file is None:
         output_file = "results-" + str(cluster_filter_threshold) + ".csv"
 
     clusters, cluster_counts, timestamps, tweets = read_clustered(data_file, True)
 
-    f_clusters, time_centroids, cluster_entities = threeshold_horoscope_filter(clusters, cluster_counts, timestamps,
-                                                                            cluster_filter_threshold)
+    f_clusters, time_centroids, cluster_entities = threeshold_filter(clusters, cluster_counts, timestamps,
+                                                                     cluster_filter_threshold)
 
     # find similar clusters:
     window_timedelta = datetime.timedelta(hours=2)
