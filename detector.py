@@ -6,6 +6,7 @@ import numpy as np
 
 from entities.tweet import Tweet
 from my_utils.functions import ms_str
+from my_utils.grouping import find_similar
 from my_utils.datareader import read_clustered
 from my_utils.datawriter import print_clustered
 from my_utils.filters import threeshold_filter, threeshold_horoscope_filter
@@ -30,58 +31,21 @@ def main(args=None):
     data_file = args.data_file
 
     output_file = args.output_file
-    if output_file == None:
+    if output_file is None:
         output_file = "results-" + str(cluster_filter_threshold) + ".csv"
 
     clusters, cluster_counts, cluster_timestamps, tweets = read_clustered(data_file, True)
 
     timestamps: np.array = np.array(cluster_timestamps)
 
-    # by_user_counts: Dict[int, int] = {}
-    #
-    # for row in range(len(timestamps)):
-    #     user_id = timestamps[row][2]
-    #     if user_id not in by_user_counts:
-    #         by_user_counts[user_id] = 0
-    #     by_user_counts[user_id] = by_user_counts[user_id] + 1
-    #
-    # for uid in by_user_counts:
-    #     if by_user_counts[uid] > 20:
-    #         print(uid)
-    #         for t in tweets:
-    #             if t.user_id == uid:
-    #                 print(ms_str(t.timestamp_ms), t.cluster_name_entity, t.tweet_text)
-    #
-    # return
-
     f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_horoscope_filter(clusters, cluster_counts, timestamps,
                                                                             cluster_filter_threshold);
 
     f_cluster_centroids = np.array(f_cluster_centroids)
-    centroids_sortedby_time = f_cluster_centroids[f_cluster_centroids[:, 1].argsort()]
 
     # find similar clusters:
-    candidate_similar_clusters: dict = {}
     window_timedelta = datetime.timedelta(hours=2)
-    window_timespan = window_timedelta.total_seconds() * 1000
-
-    # o(n^2) algorithm, needs improvement
-    for centroid in centroids_sortedby_time:
-        cluster_id = centroid[0]
-        window_start = centroid[1] - window_timespan
-        window_end = centroid[1]
-        for centroid_ in centroids_sortedby_time:  # search again from the begining
-            other_cluster_id = centroid_[0]
-
-            if cluster_id not in candidate_similar_clusters:
-                candidate_similar_clusters[cluster_id] = []
-
-            if window_start >= centroid_[1] or centroid_[1] > window_end or cluster_id == other_cluster_id:
-                continue  # skip if its outside our time window
-
-            overlap = f_cluster_entities[cluster_id].intersection(f_cluster_entities[other_cluster_id])
-            if len(overlap) > 0:  # if there is overlap,
-                candidate_similar_clusters[cluster_id].append(other_cluster_id)
+    candidate_similar_clusters: dict = find_similar(f_cluster_centroids, f_cluster_centroids, window_timedelta)
 
     cluster_map: List = []
 
