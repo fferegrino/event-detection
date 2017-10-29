@@ -1,5 +1,5 @@
 import csv
-
+import numpy as np
 from entities.tweet import Tweet
 
 
@@ -42,5 +42,5 @@ def read_clustered(file: str, return_tweets: bool = False):
 
     return (clusters,
             intermediate_cluster_count,
-            intermediate_tweet_numbers,
+            np.array(intermediate_tweet_numbers),
             tweets)

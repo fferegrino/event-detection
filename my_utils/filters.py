@@ -21,7 +21,7 @@ def threeshold_filter(clusters: Dict[int, str], cluster_counts: Dict[int, int], 
             cluster_entities[c_id] = named_entities
             relevant_cluster_centroids.append([c_id, timestamp_centroid])
 
-    return filtered_clusters, relevant_cluster_centroids, cluster_entities
+    return filtered_clusters, np.array(relevant_cluster_centroids), cluster_entities
 
 
 horoscope_words = {'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius',
@@ -51,4 +51,4 @@ def threeshold_horoscope_filter(clusters: Dict[int, str], cluster_counts: Dict[i
             cluster_entities[c_id] = named_entities
             relevant_cluster_centroids.append([c_id, timestamp_centroid])
 
-    return filtered_clusters, relevant_cluster_centroids, cluster_entities
+    return filtered_clusters,  np.array(relevant_cluster_centroids), cluster_entities

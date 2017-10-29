@@ -6,7 +6,7 @@ import numpy as np
 
 from entities.tweet import Tweet
 from my_utils.functions import ms_str
-from my_utils.grouping import find_similar
+from my_utils.grouping import find_similar_clusters, join_superclusters
 from my_utils.datareader import read_clustered
 from my_utils.datawriter import print_clustered
 from my_utils.filters import threeshold_filter, threeshold_horoscope_filter
@@ -34,35 +34,16 @@ def main(args=None):
     if output_file is None:
         output_file = "results-" + str(cluster_filter_threshold) + ".csv"
 
-    clusters, cluster_counts, cluster_timestamps, tweets = read_clustered(data_file, True)
+    clusters, cluster_counts, timestamps, tweets = read_clustered(data_file, True)
 
-    timestamps: np.array = np.array(cluster_timestamps)
-
-    f_clusters, f_cluster_centroids, f_cluster_entities = threeshold_horoscope_filter(clusters, cluster_counts, timestamps,
-                                                                            cluster_filter_threshold);
-
-    f_cluster_centroids = np.array(f_cluster_centroids)
+    f_clusters, time_centroids, cluster_entities = threeshold_horoscope_filter(clusters, cluster_counts, timestamps,
+                                                                            cluster_filter_threshold)
 
     # find similar clusters:
     window_timedelta = datetime.timedelta(hours=2)
-    candidate_similar_clusters: dict = find_similar(f_cluster_centroids, f_cluster_centroids, window_timedelta)
+    candidate_similar_clusters: dict = find_similar_clusters(cluster_entities, time_centroids, window_timedelta)
 
-    cluster_map: List = []
-
-    for cluster_id in candidate_similar_clusters:
-        cluster_map.append(cluster_id)
-
-    uf = UnionFind(len(cluster_map))
-
-    superclusters: dict = {}
-
-    for i, original_cluster in enumerate(cluster_map):
-        superclusters[i] = f_cluster_entities[original_cluster]
-        for candidate in candidate_similar_clusters[original_cluster]:
-            if uf.find(i, cluster_map.index(candidate)):
-                continue
-            uf.union(i, cluster_map.index(candidate))
-            superclusters[i] = superclusters[i] | f_cluster_entities[candidate]
+    cluster_map, superclusters = join_superclusters(cluster_entities, candidate_similar_clusters)
 
     # now, filter tweets
     new_selected_tweets: List[Tweet] = []
