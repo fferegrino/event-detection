@@ -3,11 +3,10 @@ from typing import Dict, List, Tuple, Set
 import numpy as np
 
 
-def threeshold_filter(clusters: Dict[int, str], cluster_counts: Dict[int, int], timestamps: np.array,
-                      cluster_filter_threshold: int) -> Tuple[Set[int], np.array, Dict[int, Set[str]]]:
+def threeshold_filter(cluster_counts: Dict[int, int], timestamps: np.array, cluster_filter_threshold: int) \
+        -> Tuple[Set[int], np.array]:
     """
     Filters clusters that contain less than the specified number of tweets
-    :param clusters:
     :param cluster_counts:
     :param timestamps:
     :param cluster_filter_threshold:
@@ -15,20 +14,15 @@ def threeshold_filter(clusters: Dict[int, str], cluster_counts: Dict[int, int], 
     """
     filtered_clusters: Set[int] = set()
     relevant_cluster_centroids: List[List[int]] = []
-    cluster_entities: Dict[int, Set[str]] = {}
 
-    for c_id in clusters:
+    for c_id in cluster_counts:
         if cluster_counts[c_id] > cluster_filter_threshold:
-            named_entities = set(clusters[c_id].split(' '))
-            if '' in named_entities:
-                named_entities.remove('')
 
             timestamp_centroid = int(np.mean(timestamps[timestamps[:, 0] == c_id][:, 1]))
             filtered_clusters.add(c_id)
-            cluster_entities[c_id] = named_entities
             relevant_cluster_centroids.append([c_id, timestamp_centroid])
 
-    return filtered_clusters, np.array(relevant_cluster_centroids), cluster_entities
+    return filtered_clusters, np.array(relevant_cluster_centroids)
 
 
 horoscope_words = {'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius',

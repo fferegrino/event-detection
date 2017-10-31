@@ -31,9 +31,9 @@ def main(args=None):
     if output_file is None:
         output_file = "results-" + str(cluster_filter_threshold) + ".csv"
 
-    clusters, cluster_counts, timestamps, tweets = read_clustered(data_file, True)
+    cluster_entities, cluster_counts, timestamps, tweets = read_clustered(data_file, True)
 
-    f_clusters, time_centroids, cluster_entities = threeshold_filter(clusters, cluster_counts, timestamps,
+    f_clusters, time_centroids = threeshold_filter(cluster_counts, timestamps,
                                                                      cluster_filter_threshold)
 
     # find similar clusters:
