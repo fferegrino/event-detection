@@ -1,1 +1,0 @@
-Folder to store my results (I do not want a mess on the root folder)

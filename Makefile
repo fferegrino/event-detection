@@ -1,12 +1,30 @@
 .ONESHELL:
 run:
-	python detector.py 50 3600 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-50.csv
-	python detector.py 50 7200 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-50.csv
-	python detector.py 10 7200 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-10.csv
+	python detector.py 50 3600 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-3600-50.csv
+	python detector.py 50 7200 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-7200-50.csv
+	python detector.py 50 14400 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-14400-50.csv
+	python detector.py 5 3600 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-3600-5.csv
+	python detector.py 5 7200 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-7200-5.csv
+	python detector.py 5 14400 "data/1day/clusters.sortedby.clusterid.csv" -o results/1day-14400-5.csv
+	python detector.py 50 3600 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-3600-50.csv
+	python detector.py 50 7200 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-7200-50.csv
+	python detector.py 50 14400 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-14400-50.csv
+	python detector.py 5 3600 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-3600-5.csv
+	python detector.py 5 7200 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-7200-5.csv
+	python detector.py 5 14400 "data/7days/clusters.sortedby.clusterid.csv" -o results/7days-14400-5.csv
 evaluate:
-	python eval.py results/1day-50.csv > results/eval-1day-50.txt
-	python eval.py results/7days-50.csv > results/eval-7days-50.txt
-	python eval.py results/7days-10.csv > results/eval-7days-10.txt
+	python eval.py results/1day-3600-50.csv> results/1day-3600-50.txt
+	python eval.py results/1day-7200-50.csv > results/1day-7200-50.txt
+	python eval.py results/1day-14400-50.csv > results/1day-14400-50.txt
+	python eval.py results/1day-3600-5.csv> results/1day-3600-5.txt
+	python eval.py results/1day-7200-5.csv > results/1day-7200-5.txt
+	python eval.py results/1day-14400-5.csv > results/1day-14400-5.txt
+	python eval.py results/7days-3600-50.csv> results/7days-3600-50.txt
+	python eval.py results/7days-7200-50.csv > results/7days-7200-50.txt
+	python eval.py results/7days-14400-50.csv > results/7days-14400-50.txt
+	python eval.py results/7days-3600-5.csv> results/7days-3600-5.txt
+	python eval.py results/7days-7200-5.csv > results/7days-7200-5.txt
+	python eval.py results/7days-14400-5.csv > results/7days-14400-5.txt
 evaluate_professor:
 	python eval.py data/1day/clusters.sortedby.clusterid.csv > results/professor-1day.txt
 	python eval.py data/7days/clusters.sortedby.clusterid.csv > results/professor-7days.txt

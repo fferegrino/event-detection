@@ -4,6 +4,8 @@ import numpy as np
 
 from structures.unionfind import UnionFind
 
+from my_utils.functions import ms_str
+
 
 def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroids: np.array,
                           delta_seconds: int) -> Dict[int, List[int]]:
@@ -30,25 +32,30 @@ def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroi
             if cluster_id not in candidate_similar_clusters:
                 candidate_similar_clusters[cluster_id] = []
 
-            if window_start >= centroid_[1] or centroid_[1] > window_end or cluster_id == other_cluster_id:
-                continue  # skip if its outside our time window
+            if cluster_id == other_cluster_id:
+                continue
 
-            overlap = cluster_entities[cluster_id].intersection(cluster_entities[other_cluster_id])
-            if len(overlap) > 0:  # if there is overlap,
-                candidate_similar_clusters[cluster_id].append(other_cluster_id)
+            if window_start <= centroid_[1] < window_end:
+                overlap = cluster_entities[cluster_id].intersection(cluster_entities[other_cluster_id])
+                if len(overlap) > 0:  # if there is overlap,
+                    #print("Merging " + str(cluster_id) +" and " + str(other_cluster_id) + " " + ms_str(window_start) + " to " + ms_str(window_end))
+                    candidate_similar_clusters[cluster_id].append(other_cluster_id)
+                continue
+
 
     return candidate_similar_clusters
 
 
 def join_superclusters(cluster_entities: Dict[int, Set[str]], candidate_similar_clusters: Dict[int, List[int]]) \
-        -> Tuple[List[int], Dict[int, Set[str]]]:
+        -> Tuple[UnionFind, List[int], Dict[int, Set[str]]]:
     """
     Merge candidate similar clusters using a union-find data structure
     :param cluster_entities: a dictionary containing the sets of entities for each cluster
     :param candidate_similar_clusters: a dictionary containing lists of possible candidate similar clusters
     :return:
         A tuple containing
-        1) a list containing the original cluster id, this list serves as a map between the original ids and the union-find id
+        1) the union-find structure used to merge the clusters
+        2) a list containing the original cluster id, this list serves as a map between the original ids and the union-find id
         3) a dictionary containing the sets of merged entities for each supercluster
     :rtype: (list, dict)
     """
@@ -68,4 +75,4 @@ def join_superclusters(cluster_entities: Dict[int, Set[str]], candidate_similar_
             uf.union(i, cluster_map.index(candidate))
             superclusters[i] = superclusters[i] | cluster_entities[candidate]
 
-    return (cluster_map, superclusters)
+    return (uf, cluster_map, superclusters)

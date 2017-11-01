@@ -34,7 +34,7 @@ def main(args=None):
 
     candidate_similar_clusters: dict = find_similar_clusters(cluster_entities, time_centroids, args.window_seconds)
 
-    cluster_map, superclusters = join_superclusters(cluster_entities, candidate_similar_clusters)
+    uf, cluster_map, superclusters = join_superclusters(cluster_entities, candidate_similar_clusters)
 
     # now, filter tweets
     new_selected_tweets: List[Tweet] = []
@@ -42,7 +42,7 @@ def main(args=None):
         real_cluster_id = t.cluster_id
         if real_cluster_id in filtered_clusters:
             mapped_cluster_id = cluster_map.index(real_cluster_id)
-            t.cluster_id = real_cluster_id  # set new cluster
+            t.cluster_id = uf._root(mapped_cluster_id)  # set new cluster
             t.cluster_name_entity = " ".join(superclusters[mapped_cluster_id])
 
             new_selected_tweets.append(t)
