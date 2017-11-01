@@ -1,8 +1,8 @@
-import datetime
-from typing import Set, Dict, List,Tuple
-from structures.unionfind import UnionFind
+from typing import Set, Dict, List, Tuple
 
 import numpy as np
+
+from structures.unionfind import UnionFind
 
 
 def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroids: np.array,
@@ -40,13 +40,17 @@ def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroi
     return candidate_similar_clusters
 
 
-def join_superclusters(cluster_entities: Dict[int, Set[str]],
-                       candidate_similar_clusters: Dict[int, List[int]]) -> Tuple[List[int], Dict[int, Set[str]]]:
+def join_superclusters(cluster_entities: Dict[int, Set[str]], candidate_similar_clusters: Dict[int, List[int]]) \
+        -> Tuple[List[int], Dict[int, Set[str]]]:
     """
-    Merges similar clusters based on a list provided
-    :param cluster_entities:
-    :param candidate_similar_clusters:
+    Merge candidate similar clusters using a union-find data structure
+    :param cluster_entities: a dictionary containing the sets of entities for each cluster
+    :param candidate_similar_clusters: a dictionary containing lists of possible candidate similar clusters
     :return:
+        A tuple containing
+        1) a list containing the original cluster id, this list serves as a map between the original ids and the union-find id
+        3) a dictionary containing the sets of merged entities for each supercluster
+    :rtype: (list, dict)
     """
     cluster_map: List[int] = []
 
@@ -64,5 +68,4 @@ def join_superclusters(cluster_entities: Dict[int, Set[str]],
             uf.union(i, cluster_map.index(candidate))
             superclusters[i] = superclusters[i] | cluster_entities[candidate]
 
-    return (cluster_map,
-            superclusters)
+    return (cluster_map, superclusters)

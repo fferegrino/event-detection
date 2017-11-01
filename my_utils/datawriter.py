@@ -5,13 +5,19 @@ from entities.tweet import Tweet
 
 
 def print_clustered(filename: str, tweets: List[Tweet]):
-    with open(filename, 'w',encoding='utf8',newline='') as reddit_posts_csv:
-        submwriter = csv.writer(reddit_posts_csv, delimiter=',',
+    """
+    Writes the list of specified twetts to the specified file
+    :param filename:
+    :param tweets:
+    :return:
+    """
+    with open(filename, 'w', encoding='utf8', newline='') as file:
+        csv_writer = csv.writer(file, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for tweet in tweets:
             # TODO: Fix this ugly hack of the new lines
             tweet_text = tweet.tweet_text.replace('\n', ' ')
-            submwriter.writerow((tweet.cluster_id,
+            csv_writer.writerow((tweet.cluster_id,
                                  tweet.cluster_name_entity,
                                  tweet.tweet_id,
                                  tweet.timestamp_ms,
