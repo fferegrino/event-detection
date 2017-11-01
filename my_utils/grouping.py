@@ -5,20 +5,19 @@ from structures.unionfind import UnionFind
 import numpy as np
 
 
-def find_similar_clusters(cluster_entities: Dict[int, Set[str]],
-                          cluster_centroids: np.array,
-                          time_delta: datetime.timedelta) -> Dict[int, List[int]]:
+def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroids: np.array,
+                          delta_seconds: int) -> Dict[int, List[int]]:
     """
-    Naively finds similar clusters based on a certain timeframe
-    :param cluster_entities:
-    :param cluster_centroids:
-    :param time_delta:
-    :return:
+    Naively finds similar clusters based on a certain time window
+    :param cluster_entities: a dictionary containing the sets of entities for each cluster
+    :param cluster_centroids: an array of the time centroids
+    :param delta_seconds: the time window to take into account
+    :return: a dictionary containing lists of possible candidate similar clusters
     """
     candidate_similar_clusters: Dict[int, List[int]] = {}
     centroids_sortedby_time = cluster_centroids[cluster_centroids[:, 1].argsort()]
 
-    window_timespan = time_delta.total_seconds() * 1000
+    window_timespan = delta_seconds * 1000
 
     # o(n^2) algorithm, needs improvement
     for centroid in centroids_sortedby_time:
