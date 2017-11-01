@@ -24,8 +24,8 @@ def read_clustered(file: str, return_tweets: bool = False) \
     intermediate_tweet_numbers: List[List[int]] = []
     tweets = []
 
-    with open(file, 'r', encoding='utf-8') as reddit_posts_csv:
-        reader = csv.reader(reddit_posts_csv, delimiter=',',
+    with open(file, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for row in reader:
             cluster_id = int(row[0])  # cluster id

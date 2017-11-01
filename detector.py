@@ -1,21 +1,17 @@
 import argparse
-import datetime
-from typing import List, Dict
-
-import numpy as np
+from typing import List
 
 from entities.tweet import Tweet
-from my_utils.functions import ms_str
-from my_utils.grouping import find_similar_clusters, join_superclusters
 from my_utils.datareader import read_clustered
 from my_utils.datawriter import print_clustered
 from my_utils.filters import threshold_filter
+from my_utils.grouping import find_similar_clusters, join_superclusters
 
 parser = argparse.ArgumentParser(description='Do some cluster magic!')
 parser.add_argument('threshold', metavar='sub', type=int,
                     help='the minimum amount of tweets per cluster')
 parser.add_argument('window_seconds', metavar='sub', type=int,
-                    help='the minimum amount of tweets per cluster')
+                    help='time frame to consdider when merging clusters')
 parser.add_argument("data_file", action="store",
                     help="the file containing the clusters")
 parser.add_argument("-o", "--output_file", action="store",
@@ -48,6 +44,7 @@ def main(args=None):
             mapped_cluster_id = cluster_map.index(real_cluster_id)
             t.cluster_id = real_cluster_id  # set new cluster
             t.cluster_name_entity = " ".join(superclusters[mapped_cluster_id])
+
             new_selected_tweets.append(t)
 
     if args.verbose:
