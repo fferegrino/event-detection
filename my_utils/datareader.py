@@ -20,7 +20,7 @@ def read_clustered(file: str, return_tweets: bool = False) \
     :rtype: (dict, dict, np.array, list)
     """
     clusters: Dict[int, Set[str]] = {}
-    intermediate_cluster_count: Dict[int, int] = {}
+    cluster_counts: Dict[int, int] = {}
     intermediate_tweet_numbers: List[List[int]] = []
     tweets = []
 
@@ -50,10 +50,10 @@ def read_clustered(file: str, return_tweets: bool = False) \
 
             if cluster_id not in clusters:
                 clusters[cluster_id] = named_entities
-                intermediate_cluster_count[cluster_id] = 0
-            intermediate_cluster_count[cluster_id] = intermediate_cluster_count[cluster_id] + 1
+                cluster_counts[cluster_id] = 0
+            cluster_counts[cluster_id] = cluster_counts[cluster_id] + 1
 
     return (clusters,
-            intermediate_cluster_count,
+            cluster_counts,
             np.array(intermediate_tweet_numbers),
             tweets)
