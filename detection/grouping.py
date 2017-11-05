@@ -4,22 +4,20 @@ import numpy as np
 
 from structures.unionfind import UnionFind
 
-from utils.functions import ms_str
 
-
-def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroids: np.array,
-                          delta_seconds: int) -> Dict[int, List[int]]:
+def find_similar_clusters(entities: Dict[int, Set[str]], centroids: np.array,
+                          delta: int) -> Dict[int, List[int]]:
     """
     Naively finds similar clusters based on a certain time window
-    :param cluster_entities: a dictionary containing the sets of entities for each cluster
-    :param cluster_centroids: an array of the time centroids
-    :param delta_seconds: the time window to take into account
+    :param entities: a dictionary containing the sets of entities for each cluster
+    :param centroids: an array of the time centroids
+    :param delta: the time window to take into account
     :return: a dictionary containing lists of possible candidate similar clusters
     """
     candidate_similar_clusters: Dict[int, List[int]] = {}
-    centroids_sortedby_time = cluster_centroids[cluster_centroids[:, 1].argsort()]
+    centroids_sortedby_time = centroids[centroids[:, 1].argsort()]
 
-    window_timespan = delta_seconds * 1000
+    window_timespan = delta * 1000
 
     # o(n^2) algorithm, needs improvement
     for centroid in centroids_sortedby_time:
@@ -27,21 +25,15 @@ def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroi
         window_start = centroid[1] - window_timespan
         window_end = centroid[1]
         for centroid_ in centroids_sortedby_time:  # search again from the begining
-            other_cluster_id = centroid_[0]
-
+            other_id = centroid_[0]
             if cluster_id not in candidate_similar_clusters:
                 candidate_similar_clusters[cluster_id] = []
-
-            if cluster_id == other_cluster_id:
+            if cluster_id == other_id:
                 continue
-
             if window_start <= centroid_[1] < window_end:
-                overlap = cluster_entities[cluster_id].intersection(cluster_entities[other_cluster_id])
+                overlap = entities[cluster_id].intersection(entities[other_id])
                 if len(overlap) > 0:  # if there is overlap,
-                    #print("Merging " + str(cluster_id) +" and " + str(other_cluster_id) + " " + ms_str(window_start) + " to " + ms_str(window_end))
-                    candidate_similar_clusters[cluster_id].append(other_cluster_id)
-                continue
-
+                    candidate_similar_clusters[cluster_id].append(other_id)
 
     return candidate_similar_clusters
 
