@@ -44,6 +44,5 @@ evaluate:
 	python eval.py results/7days-7200-5.csv > results/7days-7200-5.txt
 	python eval.py results/7days-14400-5.csv > results/7days-14400-5.txt
 evaluate_professor:
-	python eval.py data/1day/clusters.sortedby.clusterid.csv > results/professor-1day.txt
 	python eval.py data/7days/clusters.sortedby.clusterid.csv > results/professor-7days.txt
 	

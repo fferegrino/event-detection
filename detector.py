@@ -1,11 +1,11 @@
 import argparse
 from typing import List
 
-from detection.grouping import find_similar_clusters, join_superclusters
 from detection.filters import threshold_filter
-from entities.tweet import Tweet
+from detection.grouping import find_similar_clusters, join_superclusters
 from io.datareader import read_clustered
 from io.datawriter import print_clustered
+from structures.tweet import Tweet
 
 parser = argparse.ArgumentParser(description='Do some cluster magic!')
 parser.add_argument('threshold', metavar='sub', type=int,

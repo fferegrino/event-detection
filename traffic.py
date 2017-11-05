@@ -1,10 +1,9 @@
 from typing import Set
-from nltk.tokenize import word_tokenize, sent_tokenize
 
-from my_utils.datareader import read_clustered
-from entities.tweet import Tweet
+from nltk.tokenize import word_tokenize
 
-
+from io.datareader import read_clustered
+from structures.tweet import Tweet
 
 # get the traffic words:
 with open('traffic_words.txt') as f:

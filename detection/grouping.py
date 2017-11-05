@@ -4,7 +4,7 @@ import numpy as np
 
 from structures.unionfind import UnionFind
 
-from my_utils.functions import ms_str
+from utils.functions import ms_str
 
 
 def find_similar_clusters(cluster_entities: Dict[int, Set[str]], cluster_centroids: np.array,

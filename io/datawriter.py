@@ -1,7 +1,7 @@
 import csv
 from typing import List
 
-from entities.tweet import Tweet
+from structures.tweet import Tweet
 
 
 def print_clustered(filename: str, tweets: List[Tweet]):

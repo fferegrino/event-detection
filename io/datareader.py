@@ -2,7 +2,8 @@ import csv
 from typing import Dict, List, Tuple, Set
 
 import numpy as np
-from entities.tweet import Tweet
+
+from structures.tweet import Tweet
 
 
 def read_clustered(file: str, return_tweets: bool = False) \
