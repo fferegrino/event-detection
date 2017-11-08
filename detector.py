@@ -1,11 +1,13 @@
 import argparse
+import numpy as np
 from typing import List
 
 from detection.filters import threshold_filter
 from detection.grouping import find_similar_clusters, join_superclusters
-from io.datareader import read_clustered
-from io.datawriter import print_clustered
+from inputandoutput.datareader import read_clustered
+from inputandoutput.datawriter import print_clustered
 from structures.tweet import Tweet
+from utils.functions import ms_str
 
 parser = argparse.ArgumentParser(description='Do some cluster magic!')
 parser.add_argument('threshold', metavar='sub', type=int,
@@ -29,6 +31,22 @@ def main(args=None):
         output_file = "results-" + str(cluster_filter_threshold) + ".csv"
 
     cluster_entities, cluster_counts, timestamps, tweets = read_clustered(data_file, True)
+
+    windows = 24
+    window_timeframes = 5
+
+    min_time = tweets[0].timestamp_ms
+    max_time = tweets[-1].timestamp_ms
+
+    time_stops = [int(time) for time in np.linspace(min_time, max_time, windows+1)][1:]
+    current_stop = 0
+    for t in Tweet
+    print("Earliest", ms_str(min_time))
+    print("Latest  ", ms_str(max_time))
+    for tim in time_stops:
+        print(ms_str(tim))
+
+    return
 
     filtered_clusters, time_centroids = threshold_filter(cluster_counts, timestamps, cluster_filter_threshold)
 

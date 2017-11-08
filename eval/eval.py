@@ -60,14 +60,14 @@ def main():
 
     candidates = {}
     eval_file = open(eval_file, 'r')
-    line = 0 
+    line = 0
     for row in eval_file:
         line += 1
         parts = row.strip().split(",")
         if len(parts) < 2:
             print("Line", line, "malformed.")
-            print("Expected:\t[cluster_id],[named_entity],[tweet_id]") 
-            print("Or:\t\t[cluster_id],[tweet_id]") 
+            print("Expected:\t[cluster_id],[named_entity],[tweet_id]")
+            print("Or:\t\t[cluster_id],[tweet_id]")
             print("\nGot:\t\t", row)
             return
 

@@ -2,7 +2,7 @@ from typing import Set
 
 from nltk.tokenize import word_tokenize
 
-from io.datareader import read_clustered
+from inputandoutput.datareader import read_clustered
 from structures.tweet import Tweet
 
 # get the traffic words:
