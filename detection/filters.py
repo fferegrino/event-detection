@@ -3,6 +3,25 @@ from typing import Dict, List, Tuple, Set
 import numpy as np
 
 
+def kleinberg_filter(filtered_clusters, timestamps, s=2, gamma=0.1):
+    new_filtered_clusters: Set[int] = set()
+    relevant_cluster_centroids: List[List[int]] = []
+    for c in filtered_clusters:
+        cluster_times = sorted(set(timestamps[timestamps[:,0] == c][:,1].tolist()))
+        bursts = kleinberg(cluster_times, s, gamma)
+
+        # Select only clusters with bursts:
+        selected = bursts[bursts[:,0] == 1]
+        if(len(selected) > 0):
+            timestamp_centroid = int(np.mean(timestamps[timestamps[:, 0] == c_id][:, 1]))
+            relevant_cluster_centroids.append([c_id, timestamp_centroid])
+            new_filtered_clusters.add(c_id)
+
+    return new_filtered_clusters, np.array(relevant_cluster_centroids)
+
+
+
+
 def threshold_filter(cluster_counts: Dict[int, int], timestamps: np.array, cluster_filter_threshold: int) \
         -> Tuple[Set[int], np.array]:
     """
