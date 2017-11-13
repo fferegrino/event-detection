@@ -1,10 +1,10 @@
 import argparse
 from typing import List
 
-from detection.filters import threshold_filter
+from detection.filters import threshold_filter, kleinberg_filter
 from detection.grouping import find_similar_clusters, join_superclusters
-from io.datareader import read_clustered
-from io.datawriter import print_clustered
+from inputoutput.datareader import read_clustered
+from inputoutput.datawriter import print_clustered
 from structures.tweet import Tweet
 
 parser = argparse.ArgumentParser(description='Do some cluster magic!')
@@ -31,6 +31,8 @@ def main(args=None):
     cluster_entities, cluster_counts, timestamps, tweets = read_clustered(data_file, True)
 
     filtered_clusters, time_centroids = threshold_filter(cluster_counts, timestamps, cluster_filter_threshold)
+
+    #filtered_clusters, time_centroids = kleinberg_filter(filtered_clusters, timestamps, s=2, gamma=0.3)
 
     candidate_similar_clusters: dict = find_similar_clusters(cluster_entities, time_centroids, args.window_seconds)
 
