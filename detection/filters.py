@@ -1,18 +1,30 @@
 from typing import Dict, List, Tuple, Set
+from detection.kleinberg import kleinberg
 
 import numpy as np
 
 
-def kleinberg_filter(filtered_clusters, timestamps, s=2, gamma=0.1):
+def kleinberg_filter(filtered_clusters: Set[int], timestamps: np.array, s: int=2, gamma: float =0.1):
+    """
+    :param filtered_clusters: A set containing the already filtered clusters
+    :param timestamps: an array containing the timestamps for each tweet
+    :param s: the base of the exponential distribution that is used for modeling the event frequencies
+    :param gamma: coefficient for the transition costs between states
+    :return:
+        A tuple containing
+        1) a set containing the cluster id of the selected clusters
+        3) a np.array containing the time centroids for each one of the selected clusters
+    :rtype: (set, np.array)
+    """
     new_filtered_clusters: Set[int] = set()
     relevant_cluster_centroids: List[List[int]] = []
-    for c in filtered_clusters:
-        cluster_times = sorted(set(timestamps[timestamps[:,0] == c][:,1].tolist()))
+    for c_id in filtered_clusters:
+        cluster_times = sorted(set(timestamps[timestamps[:,0] == c_id][:,1].tolist()))
         bursts = kleinberg(cluster_times, s, gamma)
 
         # Select only clusters with bursts:
         selected = bursts[bursts[:,0] == 1]
-        if(len(selected) > 0):
+        if len(selected) > 0:
             timestamp_centroid = int(np.mean(timestamps[timestamps[:, 0] == c_id][:, 1]))
             relevant_cluster_centroids.append([c_id, timestamp_centroid])
             new_filtered_clusters.add(c_id)

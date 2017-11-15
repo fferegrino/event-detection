@@ -1,8 +1,23 @@
+# From https://github.com/rpoddighe/pybursts
+# All credit goes to Renzo Poddighe who ported this code from the R implementation
+
 from __future__ import division
 import numpy as np
 import math
 
+
 def kleinberg(offsets, s=2, gamma=1):
+    """
+    This is a Python port of the R implementation of Kleinberg’s algorithm (described in ‘Bursty and Hierarchical Structure in Streams’).
+    The algorithm models activity bursts in a time series as an infinite hidden Markov model.
+    :param offsets: a list of time offsets
+    :param s: the base of the exponential distribution that is used for modeling the event frequencies
+    :param gamma: coefficient for the transition costs between states
+    :return:
+        An array of intervals in which a burst of activity was detected. The first column denotes the level within
+        the hierarchy; the second column the start value of the interval; the third column the end value. The first
+        row is always the top-level activity (the complete interval from start to finish).
+    """
     if s <= 1:
         raise ValueError("s must be greater than 1!")
     if gamma <= 0:

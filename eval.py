@@ -36,7 +36,12 @@ def main():
         for f in listdir(eval_file):
             ff = join(eval_file, f)
             if isfile(ff) and ff.endswith(".csv"):
-                g1 = f.index('-')
+                k = 0
+                try:
+                    k = f.index("klein")
+                except ValueError:
+                    k = 0
+                g1 = f.index('-', k)
                 g2 = f.index('-', g1+1)
                 d = f.index('.', g2+1)
                 data = f[0:g1]
@@ -88,6 +93,14 @@ def main():
     with open("overall-results.csv", 'w', encoding='utf8', newline='') as file:
         csv_writer = csv.writer(file, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(("Day",
+                             "Evaluation params",
+                             "Events",
+                             "Clusters",
+                             "Recall",
+                             "Precission",
+                             "F-measure"))
         for evaluation in files_to_evaluate:
 
 

@@ -18,6 +18,8 @@ parser.add_argument("-o", "--output_file", action="store",
                     help="the file where I should save the results")
 parser.add_argument("-v", "--verbose", help="should i tell you everything im doing?",
                     action="store", default=True)
+parser.add_argument("-k", "--use_kleinberg", help="Use Kleinberg's burst detection algorithm to filter?",
+                    action="store", default=False)
 
 
 def main(args=None):
@@ -32,7 +34,8 @@ def main(args=None):
 
     filtered_clusters, time_centroids = threshold_filter(cluster_counts, timestamps, cluster_filter_threshold)
 
-    #filtered_clusters, time_centroids = kleinberg_filter(filtered_clusters, timestamps, s=2, gamma=0.3)
+    if args.use_kleinberg:
+        filtered_clusters, time_centroids = kleinberg_filter(filtered_clusters, timestamps, s=2, gamma=0.6)
 
     candidate_similar_clusters: dict = find_similar_clusters(cluster_entities, time_centroids, args.window_seconds)
 
